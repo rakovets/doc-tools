@@ -1,3 +1,6 @@
 # JetBrains Tools
 .idea/
 *.iml
+
+# Go
+main
