@@ -1,6 +1,7 @@
 package app
 
 import (
+	"bufio"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -99,15 +100,7 @@ func readContent(config ConfluenceConfig, page string) (*ConfluenceContent, erro
 
 func convert(config *Global, input []byte, header string) ([]byte, error) {
 	cmd := prepareCommand(config)
-	stdin, err := cmd.StdinPipe()
-	if nil != err {
-		return nil, err
-	}
-	_, err = stdin.Write(input)
-	if err != nil {
-		return nil, err
-	}
-	stdin.Close()
+	go writeWithBuffer(cmd, input)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, err
@@ -118,6 +111,13 @@ func convert(config *Global, input []byte, header string) ([]byte, error) {
 		return out, nil
 	}
 	return append([]byte(header), out...), nil
+}
+
+func writeWithBuffer(cmd *exec.Cmd, input []byte) {
+	stdin, _ := cmd.StdinPipe()
+	writer := bufio.NewWriter(stdin)
+	_, _ = writer.Write(input)
+	_ = stdin.Close()
 }
 
 func prepareCommand(config *Global) *exec.Cmd {
