@@ -1,1 +1,9 @@
 = doc-tools
+
+Documentation tools
+
+This repository contain go application with different converters for *Documentation in Code* and publishing in various forms.
+
+The best markup language available to include *Documentation as Code* is *AsciiDoc*.
+
+The goal is to keep the documentation in the project's source code, making it easier to update code and documentation.
