@@ -32,7 +32,7 @@ func convertConfluenceToAsciiDoc(global *Global) error {
 			return err
 		}
 
-		filename := content.Title + global.To.FileExtension()
+		filename := normalizeFilename(content.Title) + global.To.FileExtension()
 		path := strings.Join([]string{global.Output, filename}, string(os.PathSeparator))
 		err = writeContent(path, convertedContent)
 		if err != nil {
@@ -176,4 +176,10 @@ func find(dir, ext string) []string {
 
 func cleanFilename(filename string) string {
 	return strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
+}
+
+func normalizeFilename(filename string) string {
+	tmp := strings.ReplaceAll(filename, "/", "_")
+	tmp = strings.ReplaceAll(tmp, " ", "_")
+	return tmp
 }
