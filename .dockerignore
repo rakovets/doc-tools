@@ -1,0 +1,23 @@
+# Project
+docs/
+examples/
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.adoc
+README.md
+
+# Build tools
+.dockerignore
+Dockerfile
+Makefile
+
+# JetBrains Tools
+.idea/
+
+# Binary files
+main
+
