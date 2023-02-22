@@ -1,6 +1,7 @@
 package app
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -70,8 +71,11 @@ func readContent(config ConfluenceConfig, page string) (*ConfluenceContent, erro
 		return nil, err
 	}
 	req.SetBasicAuth(config.Username, config.Password)
-	cli := &http.Client{}
-	resp, err := cli.Do(req)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
