@@ -67,6 +67,7 @@ func convertAsciiDocToPdf(global *Global) error {
 func readContent(config ConfluenceConfig, page string) (*ConfluenceContent, error) {
 	baseUrl := strings.Join([]string{config.Url, "rest", "api", "content"}, "/")
 	url := fmt.Sprintf("%s/%s?expand=body.storage", baseUrl, page)
+	log.Printf("DEBUG: start to read content from '%s'", url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -94,11 +95,12 @@ func readContent(config ConfluenceConfig, page string) (*ConfluenceContent, erro
 		return nil, err
 	}
 
-	log.Printf("DEBUG: read content from '%s'", url)
+	log.Printf("DEBUG: finish to read content from '%s'", url)
 	return &content, nil
 }
 
 func convert(config *Global, input []byte, header string) ([]byte, error) {
+	log.Printf("DEBUG: start to convert content from '%s' to '%s'", config.From.PandocName(), config.To.PandocName())
 	cmd := prepareCommand(config)
 	go writeWithBuffer(cmd, input)
 	out, err := cmd.CombinedOutput()
@@ -106,7 +108,7 @@ func convert(config *Global, input []byte, header string) ([]byte, error) {
 		return nil, err
 	}
 
-	log.Printf("DEBUG: convert content from '%s' to '%s'", config.From.PandocName(), config.To.PandocName())
+	log.Printf("DEBUG: finish to convert content from '%s' to '%s'", config.From.PandocName(), config.To.PandocName())
 	if header == "" {
 		return out, nil
 	}
@@ -133,6 +135,7 @@ func prepareCommand(config *Global) *exec.Cmd {
 }
 
 func writeContent(path string, content []byte) error {
+	log.Printf("DEBUG: start to write content to '%s'", path)
 	ensureDir(path)
 	file, err := os.Create(path)
 	if err != nil {
@@ -143,7 +146,7 @@ func writeContent(path string, content []byte) error {
 		return err
 	}
 
-	log.Printf("DEBUG: write content to '%s'", path)
+	log.Printf("DEBUG: finish to write content to '%s'", path)
 	return nil
 }
 
