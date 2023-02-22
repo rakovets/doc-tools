@@ -123,13 +123,13 @@ func writeWithBuffer(cmd *exec.Cmd, input []byte) {
 func prepareCommand(config *Global) *exec.Cmd {
 	if config.From == AsciiDoc {
 		if config.To == Pdf {
-			return exec.Command("asciidoctor", "--verbose", "-r", "asciidoctor-pdf", "-b", "pdf", "-o", "-", "-")
+			return exec.Command("asciidoctor", "-r", "asciidoctor-pdf", "-b", "pdf", "-o", "-", "-")
 		}
 		return exec.Command("asciidoctor")
 	}
 	toArg := "--to=" + config.To.PandocName()
 	fromArg := "--from=" + config.From.PandocName()
-	return exec.Command("pandoc", "--verbose", "--wrap=none", fromArg, toArg)
+	return exec.Command("pandoc", "--wrap=none", fromArg, toArg)
 }
 
 func writeContent(path string, content []byte) error {
