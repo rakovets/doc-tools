@@ -1,0 +1,12 @@
+from: confluence
+to: asciidoc
+inputDir: ./input
+outputDir: ./output
+config:
+  url: "YOUR_CONFLUENCE_URL"
+  username: "YOUR_CONFLUENCE_USERNAME"
+  password: "YOUR_CONFLUENCE_PASSWORD"
+  pages:
+    - PAGE_ID_1
+    - PAGE_ID_2
+    - PAGE_ID_3
