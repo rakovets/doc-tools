@@ -1,17 +1,18 @@
 package app
 
 import (
-	. "github.com/rakovets/doc-tools/internal/config"
-	"log"
-	"os"
-	"path/filepath"
-
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
+	"log"
 	"net/http"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
+
+	. "github.com/rakovets/doc-tools/internal/config"
 )
 
 func convertConfluenceToAsciiDoc(global *Global) error {
@@ -30,6 +31,28 @@ func convertConfluenceToAsciiDoc(global *Global) error {
 		}
 
 		filename := content.Title + global.To.FileExtension()
+		path := strings.Join([]string{global.Output, filename}, string(os.PathSeparator))
+		err = writeContent(path, convertedContent)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func convertAsciiDocToPdf(global *Global) error {
+	for _, filename := range find(global.Input, global.From.FileExtension()) {
+		content, err := os.ReadFile(filename)
+		if err != nil {
+			return err
+		}
+
+		convertedContent, err := convert(global, content, "")
+		if err != nil {
+			return err
+		}
+
+		filename := cleanFilename(filename) + global.To.FileExtension()
 		path := strings.Join([]string{global.Output, filename}, string(os.PathSeparator))
 		err = writeContent(path, convertedContent)
 		if err != nil {
@@ -71,9 +94,7 @@ func readContent(config ConfluenceConfig, page string) (*ConfluenceContent, erro
 }
 
 func convert(config *Global, input []byte, header string) ([]byte, error) {
-	toArg := "--to=" + config.To.PandocName()
-	fromArg := "--from=" + config.From.PandocName()
-	cmd := exec.Command("pandoc", "--wrap=none", fromArg, toArg)
+	cmd := prepareCommand(config)
 	stdin, err := cmd.StdinPipe()
 	if nil != err {
 		return nil, err
@@ -93,6 +114,18 @@ func convert(config *Global, input []byte, header string) ([]byte, error) {
 		return out, nil
 	}
 	return append([]byte(header), out...), nil
+}
+
+func prepareCommand(config *Global) *exec.Cmd {
+	if config.From == AsciiDoc {
+		if config.To == Pdf {
+			return exec.Command("asciidoctor", "--verbose", "-r", "asciidoctor-pdf", "-b", "pdf", "-o", "-", "-")
+		}
+		return exec.Command("asciidoctor")
+	}
+	toArg := "--to=" + config.To.PandocName()
+	fromArg := "--from=" + config.From.PandocName()
+	return exec.Command("pandoc", "--verbose", "--wrap=none", fromArg, toArg)
 }
 
 func writeContent(path string, content []byte) error {
@@ -118,4 +151,25 @@ func ensureDir(filename string) {
 			panic(err)
 		}
 	}
+}
+
+func find(dir, ext string) []string {
+	var a []string
+	err := filepath.WalkDir(dir, func(s string, d fs.DirEntry, e error) error {
+		if e != nil {
+			return e
+		}
+		if filepath.Ext(d.Name()) == ext {
+			a = append(a, s)
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	return a
+}
+
+func cleanFilename(filename string) string {
+	return strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
 }

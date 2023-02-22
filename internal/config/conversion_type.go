@@ -8,6 +8,7 @@ type ConversionType struct {
 var (
 	AsciiDoc   = ConversionType{".adoc", "asciidoc"}
 	Confluence = ConversionType{".html", "html"}
+	Pdf        = ConversionType{".pdf", "pdf"}
 )
 
 func (c *ConversionType) PandocName() string {
@@ -24,8 +25,10 @@ func (c *ConversionType) ConversionType(code string) ConversionType {
 		return AsciiDoc
 	case "confluence":
 		return Confluence
+	case "pdf":
+		return Pdf
 	}
-	return AsciiDoc
+	return ConversionType{"unknown", code}
 }
 
 func (c *ConversionType) UnmarshalYAML(unmarshal func(interface{}) error) error {

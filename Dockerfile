@@ -7,8 +7,10 @@ COPY ./ ./
 RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o main ./cmd/app/main.go
 
 FROM pandoc/core:latest
+RUN apk add asciidoctor
 WORKDIR /app
 ARG CONFIG_PATH=configs/config.yaml
 ENV CONFIG_PATH=$CONFIG_PATH
 COPY --from=builder /build/main ./
+COPY --from=builder /build/configs/* ./configs/
 ENTRYPOINT ["/app/main"]
