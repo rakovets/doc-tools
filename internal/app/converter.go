@@ -187,6 +187,5 @@ func cleanFilename(filename string) string {
 
 func normalizeFilename(filename string) string {
 	tmp := strings.ReplaceAll(filename, "/", "_")
-	tmp = strings.ReplaceAll(tmp, " ", "_")
 	return tmp
 }
