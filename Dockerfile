@@ -7,7 +7,9 @@ COPY ./ ./
 RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o main ./cmd/app/main.go
 
 FROM pandoc/core:latest
-RUN apk add asciidoctor
+RUN apk add ruby && \
+    gem install --no-document asciidoctor --pre && \
+    gem install --no-document asciidoctor-pdf --pre
 WORKDIR /app
 ARG CONFIG_PATH=configs/config.yaml
 ENV CONFIG_PATH=$CONFIG_PATH
