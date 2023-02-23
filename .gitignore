@@ -1,9 +1,11 @@
+# Project
+input/
+output/
+main
+
 # JetBrains Tools
 .idea/
 *.iml
 
-# Go
-main
-
-# cacOS
+# macOS
 .DS_Store

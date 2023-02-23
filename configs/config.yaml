@@ -1,7 +1,7 @@
 from: confluence
 to: asciidoc
-inputDir: ./docs/input
-outputDir: ./docs/output
+inputDir: ./input
+outputDir: ./output
 config:
   url: "YOUR_CONFLUENCE_URL"
   username: "YOUR_CONFLUENCE_USERNAME"
