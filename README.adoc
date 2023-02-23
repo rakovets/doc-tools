@@ -7,3 +7,15 @@ This repository contain go application with different converters for *Documentat
 The best markup language available to include *Documentation as Code* is *AsciiDoc*.
 
 The goal is to keep the documentation in the project's source code, making it easier to update code and documentation.
+
+== Examples
+
+=== Confluence to AsciiDoc
+
+* *Docker Compose* file: link:./examples/confluence-to-asciidoc/docker-compose.yaml[docker-compose.yaml]
+* *Config* file: link:./examples/confluence-to-asciidoc/config.yaml[config.yaml]
+
+=== AsciiDoc to PDF
+
+* *Docker Compose* file: link:./examples/asciidoc-to-pdf/docker-compose.yaml[docker-compose.yaml]
+* *Config* file: link:./examples/asciidoc-to-pdf/config.yaml[config.yaml]
