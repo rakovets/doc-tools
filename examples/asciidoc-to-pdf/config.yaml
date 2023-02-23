@@ -1,0 +1,4 @@
+from: asciidoc
+to: pdf
+outputDir: ./output
+inputDir: ./input
