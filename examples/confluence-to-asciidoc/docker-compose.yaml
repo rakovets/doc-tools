@@ -6,5 +6,4 @@ services:
     container_name: doc-tools
     volumes:
       - ./config.yaml:/app/configs/config.yaml
-      - ./input:/app/input
       - ./output:/app/output
