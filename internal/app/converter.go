@@ -102,7 +102,8 @@ func readContent(config ConfluenceConfig, page string) (*ConfluenceContent, erro
 func convert(config *Global, input []byte, header string) ([]byte, error) {
 	log.Printf("DEBUG: start to convert content from '%s' to '%s'", config.From.PandocName(), config.To.PandocName())
 	cmd := prepareCommand(config)
-	go writeWithBuffer(cmd, input)
+	stdin, _ := cmd.StdinPipe()
+	go write(stdin, input)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, err
@@ -115,11 +116,14 @@ func convert(config *Global, input []byte, header string) ([]byte, error) {
 	return append([]byte(header), out...), nil
 }
 
-func writeWithBuffer(cmd *exec.Cmd, input []byte) {
-	stdin, _ := cmd.StdinPipe()
-	writer := bufio.NewWriter(stdin)
-	_, _ = writer.Write(input)
-	_ = stdin.Close()
+func write(stdin io.WriteCloser, input []byte) {
+	defer stdin.Close()
+	if len(input) > 4096 {
+		writer := bufio.NewWriterSize(stdin, 4096)
+		writer.Write(input)
+	} else {
+		stdin.Write(input)
+	}
 }
 
 func prepareCommand(config *Global) *exec.Cmd {
