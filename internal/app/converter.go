@@ -2,6 +2,7 @@ package app
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -27,7 +28,8 @@ func convertConfluenceToAsciiDoc(global *Global) error {
 		}
 
 		asciiDocHeader := fmt.Sprintf("= %s\n\n", content.Title)
-		convertedContent, err := convert(global, []byte(content.Body.Storage.Value), asciiDocHeader)
+		cmd := prepareCommand(global.From, global.To)
+		convertedContent, err := convert(cmd, global, []byte(content.Body.Storage.Value), asciiDocHeader)
 		if err != nil {
 			return err
 		}
@@ -49,7 +51,8 @@ func convertAsciiDocToPdf(global *Global) error {
 			return err
 		}
 
-		convertedContent, err := convert(global, content, "")
+		cmd := prepareCommand(global.From, global.To)
+		convertedContent, err := convert(cmd, global, content, "")
 		if err != nil {
 			return err
 		}
@@ -64,9 +67,38 @@ func convertAsciiDocToPdf(global *Global) error {
 	return nil
 }
 
+// todo: migrate to https://github.com/confluence-publisher/confluence-publisher
+func convertAsciiDocToConfluence(global *Global) error {
+	for _, importPage := range global.ImportPages {
+		filepath := strings.Join([]string{global.Input, importPage.Source}, "/")
+		content, err := os.ReadFile(filepath)
+		if err != nil {
+			return err
+		}
+
+		cmd := prepareCommand(global.From, DocBook)
+		tmpContent, err := convert(cmd, global, content, "")
+		cmd = prepareCommand(DocBook, Markdown)
+		tmpContent, err = convert(cmd, global, tmpContent, "")
+		cmd = prepareCommand(Markdown, global.To)
+		convertedContent, err := convert(cmd, global, tmpContent, "")
+
+		if err != nil {
+			return err
+		}
+
+		err = writeContentToConfluence(global.ConfluenceConfig, importPage, convertedContent)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// todo: move to package `rest_client`
 func readContent(config ConfluenceConfig, page string) (*ConfluenceContent, error) {
 	baseUrl := strings.Join([]string{config.Url, "rest", "api", "content"}, "/")
-	url := fmt.Sprintf("%s/%s?expand=body.storage", baseUrl, page)
+	url := fmt.Sprintf("%s/%s?expand=body.storage,version", baseUrl, page)
 	log.Printf("DEBUG: start to read content from '%s'", url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -99,9 +131,53 @@ func readContent(config ConfluenceConfig, page string) (*ConfluenceContent, erro
 	return &content, nil
 }
 
-func convert(config *Global, input []byte, header string) ([]byte, error) {
+// todo: move to package `rest_client`
+func writeContentToConfluence(config ConfluenceConfig, importPage ImportPage, content []byte) error {
+	baseUrl := strings.Join([]string{config.Url, "rest", "api", "content"}, "/")
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+
+	url := fmt.Sprintf("%s/%s", baseUrl, importPage.Id)
+
+	currentContent, _ := readContent(config, importPage.Id)
+
+	log.Printf("DEBUG: start to upload content to '%s'", url)
+
+	confluenceContent := ConfluenceContentRequest{}
+	confluenceContent.Id = importPage.Id
+	confluenceContent.Title = importPage.Title
+	confluenceContent.Type = "page"
+	confluenceContent.Version.Number = currentContent.Version.Number + 1
+	confluenceContent.Body.Wiki.Value = string(content)
+
+	preparedContent, _ := json.Marshal(confluenceContent)
+	reader := bytes.NewReader(preparedContent)
+	req, err := http.NewRequest("PUT", url, reader)
+	req.Header.Set("Content-Type", "application/json")
+	if err != nil {
+		return err
+	}
+	req.SetBasicAuth(config.Username, config.Password)
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != 200 {
+		responseBody, _ := io.ReadAll(resp.Body)
+		log.Printf("DEBUG: confluence return '%s' with body '%s'", resp.Status, responseBody)
+		return fmt.Errorf("confluence return '%s'", resp.Status)
+	}
+
+	log.Printf("DEBUG: finish to upload content to '%s'", url)
+	return nil
+}
+
+func convert(cmd *exec.Cmd, config *Global, input []byte, header string) ([]byte, error) {
 	log.Printf("DEBUG: start to convert content from '%s' to '%s'", config.From.PandocName(), config.To.PandocName())
-	cmd := prepareCommand(config)
 	log.Printf("TRACE: use command '%s'", cmd)
 	stdin, _ := cmd.StdinPipe()
 	go write(stdin, input)
@@ -130,15 +206,19 @@ func write(stdin io.WriteCloser, input []byte) {
 	log.Printf("TRACE: wrote %d byte", n)
 }
 
-func prepareCommand(config *Global) *exec.Cmd {
-	if config.From == AsciiDoc {
-		if config.To == Pdf {
+func prepareCommand(from ConversionType, to ConversionType) *exec.Cmd {
+	if from == AsciiDoc {
+		switch to {
+		case Pdf:
 			return exec.Command("asciidoctor", "-r", "asciidoctor-pdf", "-b", "pdf", "-o", "-", "-")
+		case DocBook:
+			return exec.Command("asciidoctor", "-b", "docbook", "-o", "-", "-")
+		default:
+			return exec.Command("asciidoctor", "-o", "-", "-")
 		}
-		return exec.Command("asciidoctor")
 	}
-	toArg := "--to=" + config.To.PandocName()
-	fromArg := "--from=" + config.From.PandocName()
+	toArg := "--to=" + to.PandocName()
+	fromArg := "--from=" + from.PandocName()
 	return exec.Command("pandoc", "--wrap=none", fromArg, toArg)
 }
 

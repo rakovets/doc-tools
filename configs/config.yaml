@@ -10,3 +10,13 @@ config:
     - PAGE_ID_1
     - PAGE_ID_2
     - PAGE_ID_3
+  importPages:
+    - id: "PAGE_ID_1"
+      title: "TITLE_FOR_PAGE_1"
+      source: FILEPATH_FOR_ASCIIDOC_1
+    - id: "PAGE_ID_2"
+      title: "TITLE_FOR_PAGE_2"
+      source: FILEPATH_FOR_ASCIIDOC_2
+    - id: "PAGE_ID_3"
+      title: "TITLE_FOR_PAGE_3"
+      source: FILEPATH_FOR_ASCIIDOC_3

@@ -16,10 +16,17 @@ type Global struct {
 }
 
 type ConfluenceConfig struct {
-	Url      string   `yaml:"url"`
-	Username string   `yaml:"username"`
-	Password string   `yaml:"password"`
-	Pages    []string `yaml:"pages"`
+	Url         string       `yaml:"url"`
+	Username    string       `yaml:"username"`
+	Password    string       `yaml:"password"`
+	Pages       []string     `yaml:"pages"`
+	ImportPages []ImportPage `yaml:"importPages"`
+}
+
+type ImportPage struct {
+	Id     string `yaml:"id"`
+	Title  string `yaml:"title"`
+	Source string `yaml:"source"`
 }
 
 func ReadConfig() (*Global, error) {

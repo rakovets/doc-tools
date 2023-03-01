@@ -6,9 +6,12 @@ type ConversionType struct {
 }
 
 var (
-	AsciiDoc   = ConversionType{".adoc", "asciidoc"}
-	Confluence = ConversionType{".html", "html"}
-	Pdf        = ConversionType{".pdf", "pdf"}
+	AsciiDoc       = ConversionType{".adoc", "asciidoc"}
+	Confluence     = ConversionType{".html", "html"}
+	ConfluenceWiki = ConversionType{".jira", "jira"}
+	Markdown       = ConversionType{".md", "markdown"}
+	DocBook        = ConversionType{".dbk", "docbook"}
+	Pdf            = ConversionType{".pdf", "pdf"}
 )
 
 func (c *ConversionType) PandocName() string {
@@ -25,6 +28,12 @@ func (c *ConversionType) ConversionType(code string) ConversionType {
 		return AsciiDoc
 	case "confluence":
 		return Confluence
+	case "confluence-wiki":
+		return ConfluenceWiki
+	case "markdown":
+		return Markdown
+	case "docbook":
+		return DocBook
 	case "pdf":
 		return Pdf
 	}

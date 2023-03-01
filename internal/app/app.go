@@ -20,6 +20,9 @@ func Run() {
 	} else if config.From == AsciiDoc && config.To == Pdf {
 		err = convertAsciiDocToPdf(config)
 		handleError(err)
+	} else if config.From == AsciiDoc && config.To == ConfluenceWiki {
+		err = convertAsciiDocToConfluence(config)
+		handleError(err)
 	} else {
 		log.Printf("WARN : coverter from '%s' to '%s' not found", config.From.PandocName(), config.To.PandocName())
 	}
