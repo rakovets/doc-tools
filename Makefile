@@ -5,6 +5,7 @@ help:
 	@echo "  build       Build all artifacts (binary, image)"
 	@echo "  clean       Remove all artifacts (binary, image)"
 	@echo "  help        List of commands"
+	@echo "  publish     Upload image to Registry"
 	@echo "  run         Run App locally"
 	@echo "  start       Build and force start a Container"
 	@echo "  stop        Force remove a Container"
@@ -23,3 +24,6 @@ start:
 	docker container run --name ${CONTAINER_NAME} ${IMAGE_NAME}
 stop:
 	docker container rm --force ${CONTAINER_NAME}
+publish:
+	$(MAKE) build
+	docker push ${IMAGE_NAME}
