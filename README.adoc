@@ -8,6 +8,15 @@ The best markup language available to include *Documentation as Code* is *AsciiD
 
 The goal is to keep the documentation in the project's source code, making it easier to update code and documentation.
 
+== Dependencies
+
+* link:https://asciidoctor.org/[Asciidoctor] +
+*Asciidoctor* is a fast, open source, Ruby-based text processor for parsing *AsciiDoc®* into a document model and converting it to output formats such as HTML 5, DocBook 5, manual pages, PDF, EPUB 3, and other formats.
+* link:https://pandoc.org/[Pandoc] +
+If you need to convert files from one markup format into another, *pandoc* is your swiss-army knife.
+* link:https://www.atlassian.com/software/confluence[Confluence] +
+*Confluence* is your remote-friendly team workspace where knowledge and collaboration meet. See link:https://docs.atlassian.com/atlassian-confluence/REST/latest-server/[Confluence REST API Documentation]
+
 == Examples
 
 === Confluence to AsciiDoc
