@@ -4,6 +4,8 @@ services:
   doc-tools:
     image: rakovets/doc-tools:latest
     container_name: doc-tools
+    env_file:
+      - secrets.env
     volumes:
       - ./config.yaml:/app/configs/config.yaml
       - ./input:/app/input

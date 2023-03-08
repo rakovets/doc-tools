@@ -2,9 +2,6 @@ from: asciidoc
 to: confluence-wiki
 inputDir: ./input
 config:
-  url: "YOUR_CONFLUENCE_URL"
-  username: "YOUR_CONFLUENCE_USERNAME"
-  password: "YOUR_CONFLUENCE_PASSWORD"
   importPages:
     - id: "PAGE_ID_1"
       parentId: "PAGE_PARENT_ID"
