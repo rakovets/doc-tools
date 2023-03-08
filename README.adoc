@@ -28,3 +28,8 @@ If you need to convert files from one markup format into another, *pandoc* is yo
 
 * *Docker Compose* file: link:./examples/asciidoc-to-pdf/docker-compose.yaml[docker-compose.yaml]
 * *Config* file: link:./examples/asciidoc-to-pdf/config.yaml[config.yaml]
+
+=== AsciiDoc to Confluence
+
+* *Docker Compose* file: link:./examples/asciidoc-to-confluence/docker-compose.yaml[docker-compose.yaml]
+* *Config* file: link:./examples/asciidoc-to-confluence/config.yaml[config.yaml]

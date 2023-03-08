@@ -7,11 +7,14 @@ config:
   password: "YOUR_CONFLUENCE_PASSWORD"
   importPages:
     - id: "PAGE_ID_1"
+      parentId: "PAGE_PARENT_ID"
       title: "TITLE_FOR_PAGE_1"
       source: FILEPATH_FOR_ASCIIDOC_1
     - id: "PAGE_ID_2"
+      parentId: "PAGE_PARENT_ID"
       title: "TITLE_FOR_PAGE_2"
       source: FILEPATH_FOR_ASCIIDOC_2
     - id: "PAGE_ID_3"
+      parentId: "PAGE_PARENT_ID"
       title: "TITLE_FOR_PAGE_3"
       source: FILEPATH_FOR_ASCIIDOC_3
