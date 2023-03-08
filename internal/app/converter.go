@@ -98,7 +98,7 @@ func convertAsciiDocToConfluence(global *Global) error {
 // todo: move to package `rest_client`
 func readContent(config ConfluenceConfig, page string) (*ConfluenceContent, error) {
 	baseUrl := strings.Join([]string{config.Url, "rest", "api", "content"}, "/")
-	url := fmt.Sprintf("%s/%s?expand=body.storage,version", baseUrl, page)
+	url := fmt.Sprintf("%s/%s?expand=body.storage,version,ancestors", baseUrl, page)
 	log.Printf("DEBUG: start to read content from '%s'", url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -145,13 +145,7 @@ func writeContentToConfluence(config ConfluenceConfig, importPage ImportPage, co
 
 	log.Printf("DEBUG: start to upload content to '%s'", url)
 
-	confluenceContent := ConfluenceContentRequest{}
-	confluenceContent.Id = importPage.Id
-	confluenceContent.Title = importPage.Title
-	confluenceContent.Type = "page"
-	confluenceContent.Version.Number = currentContent.Version.Number + 1
-	confluenceContent.Body.Wiki.Value = string(content)
-
+	confluenceContent := prepareConfluenceContent(importPage, currentContent, content)
 	preparedContent, _ := json.Marshal(confluenceContent)
 	reader := bytes.NewReader(preparedContent)
 	req, err := http.NewRequest("PUT", url, reader)
@@ -174,6 +168,29 @@ func writeContentToConfluence(config ConfluenceConfig, importPage ImportPage, co
 
 	log.Printf("DEBUG: finish to upload content to '%s'", url)
 	return nil
+}
+
+func prepareConfluenceContent(
+	importPage ImportPage,
+	currentContent *ConfluenceContent,
+	content []byte,
+) ConfluenceContentRequest {
+	var ancestor Ancestor
+	if importPage.ParentId != "" {
+		ancestor = Ancestor{importPage.ParentId}
+	} else {
+		ancestor = currentContent.Ancestors[len(currentContent.Ancestors)-1]
+	}
+
+	confluenceContent := ConfluenceContentRequest{}
+	confluenceContent.Id = importPage.Id
+	confluenceContent.Title = importPage.Title
+	confluenceContent.Type = "page"
+	confluenceContent.Version.Number = currentContent.Version.Number + 1
+	confluenceContent.Body.Wiki.Value = string(content)
+	confluenceContent.Ancestors = []Ancestor{ancestor}
+
+	return confluenceContent
 }
 
 func convert(cmd *exec.Cmd, config *Global, input []byte, header string) ([]byte, error) {

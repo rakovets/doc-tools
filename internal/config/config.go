@@ -24,9 +24,10 @@ type ConfluenceConfig struct {
 }
 
 type ImportPage struct {
-	Id     string `yaml:"id"`
-	Title  string `yaml:"title"`
-	Source string `yaml:"source"`
+	Id       string `yaml:"id"`
+	ParentId string `yaml:"parentId"`
+	Title    string `yaml:"title"`
+	Source   string `yaml:"source"`
 }
 
 func ReadConfig() (*Global, error) {

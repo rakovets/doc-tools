@@ -1,19 +1,21 @@
 package app
 
 type ConfluenceContent struct {
-	Id      string  `json:"id"`
-	Title   string  `json:"title"`
-	Type    string  `json:"type"`
-	Version Version `json:"version"`
-	Body    Body    `json:"body"`
+	Id        string     `json:"id"`
+	Title     string     `json:"title"`
+	Type      string     `json:"type"`
+	Version   Version    `json:"version"`
+	Ancestors []Ancestor `json:"ancestors"`
+	Body      Body       `json:"body"`
 }
 
 type ConfluenceContentRequest struct {
-	Id      string      `json:"id"`
-	Title   string      `json:"title"`
-	Type    string      `json:"type"`
-	Version Version     `json:"version"`
-	Body    RequestBody `json:"body"`
+	Id        string      `json:"id"`
+	Title     string      `json:"title"`
+	Type      string      `json:"type"`
+	Version   Version     `json:"version"`
+	Ancestors []Ancestor  `json:"ancestors"`
+	Body      RequestBody `json:"body"`
 }
 
 type Body struct {
@@ -36,6 +38,10 @@ type Version struct {
 	Message   string `json:"message,omitempty"`
 	By        *User  `json:"by,omitempty"`
 	When      string `json:"when,omitempty"`
+}
+
+type Ancestor struct {
+	Id string `json:"id"`
 }
 
 // User defines user information
