@@ -46,5 +46,20 @@ func ReadConfig() (*Global, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if global.From == Confluence || global.To == ConfluenceWiki {
+		confluenceUrl := os.Getenv("CONFLUENCE_URL")
+		confluenceUsername := os.Getenv("CONFLUENCE_USERNAME")
+		confluencePassword := os.Getenv("CONFLUENCE_PASSWORD")
+		if confluenceUsername != "" && confluencePassword != "" {
+			log.Printf("DEBUG: use Confluence config from environment variables")
+			global.Url = confluenceUrl
+			global.Username = confluenceUsername
+			global.Password = confluencePassword
+		} else {
+			log.Printf("DEBUG: use Confluence config from from config file")
+		}
+	}
+
 	return &global, nil
 }

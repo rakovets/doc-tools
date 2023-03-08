@@ -13,6 +13,9 @@ RUN apk add ruby && \
 WORKDIR /app
 ARG CONFIG_PATH=configs/config.yaml
 ENV CONFIG_PATH=$CONFIG_PATH
+ENV CONFLUENCE_URL $CONFLUENCE_URL
+ENV CONFLUENCE_USERNAME $CONFLUENCE_USERNAME
+ENV CONFLUENCE_PASSWORD $CONFLUENCE_PASSWORD
 COPY --from=builder /build/main ./
 COPY --from=builder /build/configs/* ./configs/
 ENTRYPOINT ["/app/main"]
