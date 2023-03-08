@@ -1,0 +1,123 @@
+= _Test
+
+== Formatting
+
+Normal
+
+*Bold*
+
+_Italic_
+
+*_Bold-Italic_*
+
+== Table
+
+[options="header",cols="3,1,1,1"]
+|===
+|Column 1|Column 2|Column 3|Column 4
+|Row 1 2+|Cell with column span|Cell
+|Row 2 .2+|Cell with row span|Cell|Cell
+|Row 3|Cell|Cell
+|===
+
+== Link
+
+link:Environment[ref link^]
+
+link:https://wiki.rakovets.com/display/PROJECT/Environment[full URL^]
+
+== Image
+
+NOT SUPPORTED (in progress)
+
+image:test.webp[]
+
+== Blockquote
+
+> Для этой страницы применяется подход *Documentation as Code*
+>
+> -- Dmitry Rakovets
+
+== Panel (with blockquote)
+
+> ⚠ IMPORTANT
+>
+> Для этой страницы применяется подход *Documentation as Code*.
+
+== List
+
+=== List
+
+* item 1
+* item 2
+* item 3
+
+=== Multi list
+
+* item 1
+** sub-item 1
+** sub-item 2
+** sub-item 3
+* item 2
+* item 3
+
+=== Ordered list
+
+1. item 1
+2. item 2
+3. item 3
+
+=== Ordered multi list
+
+1. item 1
+.. item 1.1
+.. item 1.2
+.. item 1.3
+2. item 2
+3. item 3
+
+== Code
+
+.`config.yaml`
+[source,yaml]
+----
+from: asciidoc
+to: confluence-wiki
+inputDir: ./input
+outputDir: ./output
+config:
+  url: "https://wiki.rakovets.com"
+  pages:
+    - 249660134
+  importPages:
+    - id: "249660134"
+      title: "_Test"
+      source: _test.adoc
+----
+
+.Example with JSON
+[source,json]
+----
+{
+    "menu": {
+        "id": "file",
+        "value": "File",
+        "popup": {
+            "menuitem": [
+                {
+                    "value": "New",
+                    "onclick": "CreateNewDoc()"
+                },
+                {
+                    "value": "Open",
+                    "onclick": "OpenDoc()"
+                },
+                {
+                    "value": "Close",
+                    "onclick": "CloseDoc()"
+                }
+            ]
+        }
+    }
+}
+----
