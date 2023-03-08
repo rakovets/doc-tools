@@ -1,4 +1,4 @@
-include .env
+include make.env
 
 help:
 	@echo "Commands:"
