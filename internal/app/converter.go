@@ -141,7 +141,10 @@ func writeContentToConfluence(config ConfluenceConfig, importPage ImportPage, co
 
 	url := fmt.Sprintf("%s/%s", baseUrl, importPage.Id)
 
-	currentContent, _ := readContent(config, importPage.Id)
+	currentContent, err := readContent(config, importPage.Id)
+	if err != nil {
+		return err
+	}
 
 	log.Printf("DEBUG: start to upload content to '%s'", url)
 
@@ -162,8 +165,8 @@ func writeContentToConfluence(config ConfluenceConfig, importPage ImportPage, co
 	}
 	if resp.StatusCode != 200 {
 		responseBody, _ := io.ReadAll(resp.Body)
-		log.Printf("DEBUG: confluence return '%s' with body '%s'", resp.Status, responseBody)
-		return fmt.Errorf("confluence return '%s'", resp.Status)
+		log.Printf("DEBUG: confluence return '%d' with body '%s'", resp.StatusCode, responseBody)
+		return fmt.Errorf("confluence return '%d'", resp.StatusCode)
 	}
 
 	log.Printf("DEBUG: finish to upload content to '%s'", url)
@@ -188,6 +191,8 @@ func prepareConfluenceContent(
 	confluenceContent.Type = "page"
 	confluenceContent.Version.Number = currentContent.Version.Number + 1
 	confluenceContent.Body.Wiki.Value = string(content)
+	//confluenceContent.Body.Storage.Value = string(content)
+	confluenceContent.Body.Wiki.Representation = "wiki"
 	confluenceContent.Ancestors = []Ancestor{ancestor}
 
 	return confluenceContent

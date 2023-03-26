@@ -23,11 +23,13 @@ type Body struct {
 }
 
 type RequestBody struct {
-	Wiki Content `json:"wiki"`
+	Wiki           Content `json:"wiki"`
+	Representation string  `json:"representation"`
 }
 
 type Content struct {
-	Value string `json:"value"`
+	Value          string `json:"value"`
+	Representation string `json:"representation"`
 }
 
 // Version defines the content version number
